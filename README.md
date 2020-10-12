@@ -212,35 +212,109 @@ prediction:  [2]
 ```
 
 
-### Run an AutoAI experiment  
+### Run an AutoAI experiment 
 
-Select the dataset 
-Select churnrisk as the prediction field
-When the AutoAI completes (or you stop it early), select the top pipeline to add to the deployment space.
+Start by pressing the `Add to `
+
+![Add AutoAI experiment](images/add_autoai_experiment.png)
+
+The AutoAI requires a name, churnrisk_autoai, in this case and it requires that a Machine Learning service be associated.   Follow the `Associate a Machine Learning service instance` link to select the ML service to associate.
+
+![Associate ML service](images/associate_wml_service.png)
+
+Press the `Reload` button after associating the ML service.
+
+![Reload AutoAI](images/reload_autoai_experiment.png)
+
+Create the AutoAI experiment.
+
+![Create AutoAI experiment](images/create_autoai_experiment.png)
+
+Select the data source from the Project.
+
+![Add data source](images/autoai_add_data_source.png)
+
+![Project data assets](images/project_data_assets.png)
+
+Select churnrisk as the prediction field and press the `Run experiment` button.
+
+![Run experiment](images/autoai_run_experiment.png)
+
+The Experiment summary shows the progress.
+
+![Experiment progress](images/autoai_experiment_progress.png)   
+
+When the AutoAI experiment completes, select the top pipeline from the leader to add to the deployment space.
+
+![AutoAI leaderboard](images/autoai_leaderboard.png)
+
+The Pipeline4 provides information on the model evaluation, precision recall curve, threshold chart, model information, feature transformation and feature importance. 
+
+![AutoAI model evaluation](images/autoai_model_evaluation.png)
+
+Use the `Save as` button to as a `Model`.
+
+![AutoAI save model](images/autoai_save_model.png)
+
+In the `churnrisk` project there are two new assets.  The `churnrisk_autoai` experiment that was completed and the `churnrisk_autoai - P4 RandomForestClassifierEstimator` model that was saved.
+
+![Model promotion](images/autoai_model_promote.png)
+
+Promote the model to the `churnrisk_deployment_space`.
+
+
+![Model promote to space](images/model_promote_to_space.png)
 
 Go to the deployment space to deploy the model. 
 
-Test the deployed model.
+![Model in space](images/autoai_model_in_deployment_space.png)
 
-Here is a sample payload you can use to test the AUTO AI deployed model.
+Use the rocket next to the model to deploy it. 
+
+![Deploy model](images/deploy_rocket.png)
+
+Create an online deployment for the model.
+
+![Deploy model online](images/create_autoai_model_deployment.png)
+
+You can see the AutoAI model in the list of deployments.
+
+![Deployment list](images/churnrisk_deployment_list.png)
+
+Test the deployed model using the form to input the data.
+
+![Test AutoAI model](images/deployed_autoai_model_test.png)
+
+You can also test the model using a json playload like this: 
+
 ```
- {"input_data":[{"fields":["ID","AGE_GROUP","GENDER","STATUS","CHILDREN","ESTINCOME","HOMEOWNER","AGE","TAXID","CREDITCARD","DOB","ADDRESS_1","ADDRESS_2","CITY","STATE","ZIP","ZIP4","LONGITUDE","LATITUDE","TOTALDOLLARVALUETRADED","TOTALUNITSTRADED","LARGESTSINGLETRANSACTION","SMALLESTSINGLETRANSACTION","PERCENTCHANGECALCULATION","DAYSSINCELASTLOGIN","DAYSSINCELASTTRADE","NETREALIZEDGAINS_YTD","NETREALIZEDLOSSES_YTD"],"values":[[1,"Adult","F","M",None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None,None]]}]}
-    predictions = client.deployments.score(scoring_id, payload)
+{
+	"input_data": [{
+		"fields": ["ID", "AGE_GROUP", "GENDER", "STATUS", "CHILDREN", "ESTINCOME", "HOMEOWNER", "AGE", "TAXID", "CREDITCARD", "DOB", "ADDRESS_1", "ADDRESS_2", "CITY", "STATE", "ZIP", "ZIP4", "LONGITUDE", "LATITUDE", "TOTALDOLLARVALUETRADED", "TOTALUNITSTRADED", "LARGESTSINGLETRANSACTION", "SMALLESTSINGLETRANSACTION", "PERCENTCHANGECALCULATION", "DAYSSINCELASTLOGIN", "DAYSSINCELASTTRADE", "NETREALIZEDGAINS_YTD", "NETREALIZEDLOSSES_YTD"],
+		"values": [
+			[1, "Adult", "F", "M", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null]
+		]
+	}]
+}
+```
+From your desktop, run the churnrisk_app.py application to call the AutoAI churnrisk model running in the cloud.
+
+```
+python churnrisk_autoai.py -a <YOUR APIKEY> -s <DEPLOYMENT SPACE NAME> -d "DEPLOYMENT NAME" -p <PAYLOAD>
 ```
 
-From your desktop, run the churnrisk_autoai.py application to call the churn risk predictor that is running in the cloud.
 ```
-python churnrisk_autoai.py -l INFO -a <YOU APIKEY> -s <DEPLOYMENT SPACE NAME> -d "DEPLOYMENT NAME" -p <PAYLOAD>
+python churnrisk_app.py -a _7cUoegW8Bt1ZLzgYbYms7o1uppelHJSCzwvnUegu0pB -s churnrisk_deployment_space -d churnrisk_autoai_model_deployment -p '{"input_data":[{"fields":["ID","AGE_GROUP","GENDER","STATUS","CHILDREN","ESTINCOME","HOMEOWNER","AGE","TAXID","CREDITCARD","DOB","ADDRESS_1","ADDRESS_2","CITY","STATE","ZIP","ZIP4","LONGITUDE","LATITUDE","TOTALDOLLARVALUETRADED","TOTALUNITSTRADED","LARGESTSINGLETRANSACTION","SMALLESTSINGLETRANSACTION","PERCENTCHANGECALCULATION","DAYSSINCELASTLOGIN","DAYSSINCELASTTRADE","NETREALIZEDGAINS_YTD","NETREALIZEDLOSSES_YTD"],"values":[[1,"Adult","F","M",null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null,null]]}]}'
 ```
 
+Command output: 
 
-
-From your desktop, run the churnrisk_location.py application to load and score the model that was saved. 
-
-`python churnrisk_localmodel.py`
-
-
-
-
-
-
+```
+deployment space:  churnrisk_deployment_space , id:  d39f197b-5193-40a5-aaec-c6cb34582740
+deployment id:  988cfd06-975d-42ad-be76-f7772eca8b2f
+deployment details:  {'entity': {'asset': {'id': '9684e5f7-2d75-4585-8d1d-bef2872b7b0b'}, 'custom': {}, 'deployed_asset_type': 'model', 'hybrid_pipeline_hardware_specs': [{'hardware_spec': {'name': 'S', 'num_nodes': 1}, 'node_runtime_id': 'auto_ai.kb'}], 'name': 'churnrisk_autoai_model_deployment', 'online': {}, 'space_id': 'd39f197b-5193-40a5-aaec-c6cb34582740', 'status': {'online_url': {'url': 'https://us-south.ml.cloud.ibm.com/ml/v4/deployments/988cfd06-975d-42ad-be76-f7772eca8b2f/predictions'}, 'state': 'ready'}}, 'metadata': {'created_at': '2020-10-12T16:06:09.757Z', 'id': '988cfd06-975d-42ad-be76-f7772eca8b2f', 'modified_at': '2020-10-12T16:06:09.757Z', 'name': 'churnrisk_autoai_model_deployment', 'owner': 'IBMid-550008YAWT', 'space_id': 'd39f197b-5193-40a5-aaec-c6cb34582740'}}
+payload:  {'input_data': [{'fields': ['ID', 'AGE_GROUP', 'GENDER', 'STATUS', 'CHILDREN', 'ESTINCOME', 'HOMEOWNER', 'AGE', 'TAXID', 'CREDITCARD', 'DOB', 'ADDRESS_1', 'ADDRESS_2', 'CITY', 'STATE', 'ZIP', 'ZIP4', 'LONGITUDE', 'LATITUDE', 'TOTALDOLLARVALUETRADED', 'TOTALUNITSTRADED', 'LARGESTSINGLETRANSACTION', 'SMALLESTSINGLETRANSACTION', 'PERCENTCHANGECALCULATION', 'DAYSSINCELASTLOGIN', 'DAYSSINCELASTTRADE', 'NETREALIZEDGAINS_YTD', 'NETREALIZEDLOSSES_YTD'], 'values': [[1, 'Adult', 'F', 'M', None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None, None]]}]}
+{'predictions': [{'fields': ['prediction', 'probability'],
+                  'values': [['High',
+                              [0.6926862955911713, 0.0, 0.3073137044088286]]]}]}
+```

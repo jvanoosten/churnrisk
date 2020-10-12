@@ -7,7 +7,7 @@ How do you get value from AI models?   By deploying and infusing them into appli
 
 ### Introduction
 
-IBM Watson Studio and Watson Machine Learning are available on IBM Cloud and are integrated with the IBM Cloud Pak for Data (CP4D).   These components can be used to develop AI models and deploy them.   This project outlines how to do this in the IBM Cloud but the process is also applicable to whereever you are running CP4D.
+IBM Watson Studio and Watson Machine Learning are available on the IBM Cloud and those components are also integrated with the IBM Cloud Pak for Data (CP4D).   They can be used to develop AI models and deploy them.   This project outlines how to do this in the IBM Cloud but the process is also applicable to where ever you are running CP4D.
 
 ### Pre-requisites
 
@@ -27,15 +27,17 @@ You can only see the key value at creation time.   Save the key value in a safe 
 
 ### Project Setup
 
-Start by cloning this project on your desktop. 
+Start by cloning this project on your desktop and changing to the churnrisk directory.
 
 `git clone https://github.com/jvanoosten/churnrisk.git`
 
-At the IBM Cloud Resource List screen, select the Watson Studio service and push the `Get Started` button.
+`cd churnrisk`
+
+Now go to the IBM Cloud and start at Resource List screen, select the Watson Studio service and push the `Get Started` button.
 
 ![Get Started](images/WatsonStudioGetStarted.png)
 
-Use the Quick Navigation link to go to the `Deployment spaces`.  For a name, specify `churnrisk_deployment_space`.  Select the cloud object storage and watson machine learning services that you want associated with the space.    
+Use the Quick Navigation link to go to the `Deployment spaces` and select the option  For a name, specify `churnrisk_deployment_space`.  Select the cloud object storage and watson machine learning services that you want associated with the space.    
 
 ![Create space](images/create_deployment_space.png)
  
@@ -84,8 +86,60 @@ The TradingCustomerChurnClassifier notebook
 
 ![New notebook](images/TradingCustomerChurnClassifier.png)
 
+The notebook 
 
+1. Ingest merged customer demographics and trading activity data
+2. Visualize merged dataset and get better understanding of data to build hypotheses for prediction
+3. Leverage sklearn library to build classification model that predicts whether customer has propensity to churn
+4. Expose the classification model as RESTful API endpoint for the end-to-end customer churn risk prediction and risk remediation application
 
+You can execute the notebook cells using the widgets at the top of the page or by pressing `Shift-Enter`.
+
+#### Load Data 
+
+The code to load the dataset is inserted in the notebook by using the data wizard. 
+
+![Insert code](images/notebook_pandas_dataframe_code_insert.png)
+
+After insert:
+
+![Insert code](images/notebook_pandas_dataframe_loaded.png)
+
+#### Save the model to the deployment space
+
+The model is deployed online by following these steps:
+
+1. Lookup the pre-created deployment space.
+2. Set this deployment space as the default space.
+3. Store the model pipeline in the deployment space. Enter the name for the model in the cell below.
+4. Deploy the saved model. Enter the deployment name in the cell below.
+5. Retrieve the scoring endpoint to score the model with a payload
+
+The ibm_watson_machine_learning library is used to complete these steps.
+
+You need to insert your API key to create the APIClient. 
+
+![Create APIClient](images/APIClient_create.png)
+
+After the model is saved and deployed online, it can be scored (called to make predictions).
+
+![Score model](images/score_model.png)
+
+#### Useful helper functions 
+
+A `create_download_link_csv` function is defined that can be used to create a download dataset button within the notebook. 
+
+Examples are included showing how to save and restore the model using two different packages: joblib and pickle.
+
+Finally, the project_lib package is used to save `churnrisk.pkl` to the project data assets.  The serialized model can be downloaded from the project to be used in application.  
+
+![Save model to project](images/project_lib.png)
+
+The project id can be found in the URL for the notebook.  The ID starts after `projectid=` and ends before the `&`.  The project id is `13f6e435-488e-4f71-97a0-3a4abd877587` in this example.
+
+`https://dataplatform.cloud.ibm.com/analytics/notebooks/v2/87df1173-28a4-4040-80cb-ad1ad5832fb2?projectid=13f6e435-488e-4f71-97a0-3a4abd877587&context=cpdaas`
+
+The Access Token was created earlier in Project Settings. 
 
 ### Execute the churnrisk applications on your workstation 
 
@@ -108,9 +162,11 @@ Where:
 ```
 
 Sample command:
+
 `python churnrisk_app.py -a YOUR_API_KEY -s churnrisk_deployment_space -d churnrisk_model_deployment -p '{"input_data":[{"fields":["AGE_GROUP","GENDER","STATUS","CHILDREN","ESTINCOME","HOMEOWNER","TOTALDOLLARVALUETRADED","TOTALUNITSTRADED","LARGESTSINGLETRANSACTION","SMALLESTSINGLETRANSACTION","PERCENTCHANGECALCULATION","DAYSSINCELASTLOGIN","DAYSSINCELASTTRADE","NETREALIZEDGAINS_YTD","NETREALIZEDLOSSES_YTD"],"values":[["Adult","F","M",2,25000,"N",5000,50,500,50,3.45,3,10,1500.0,0.0]]}]}'`
 
 Produces this output:
+
 ```
 deployment space:  churnrisk_deployment_space , id:  d39f197b-5193-40a5-aaec-c6cb34582740
 deployment id:  e7946bcb-af93-440a-a465-b685d54681aa
@@ -119,7 +175,7 @@ payload:  {'input_data': [{'fields': ['AGE_GROUP', 'GENDER', 'STATUS', 'CHILDREN
 {'predictions': [{'fields': ['prediction', 'probability'],
                   'values': [[2, [0.3, 0.3, 0.4]]]}]}
 ```
-The prediction(s) are shown at the bottom of the output.
+The prediction is shown at the bottom of the output.
 
 #### Execute the churnrisk_localmodel.py application 
 

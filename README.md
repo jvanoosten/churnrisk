@@ -145,9 +145,55 @@ The Access Token was created earlier in Project Settings.
 
 #### Execute the churnrisk_app.py 
 
-The churnrisk_app.py uses the APIClient from the ibm_watson_machine_learning to call the deployed model similar to example in the notebook.
+The churnrisk_app.py uses a python request to make a REST api call to the deployed model.
 
 The `python churnrisk_app.py -h` command show the help.  
+
+```
+usage: churnrisk_app.py [-h] -b B -u U -p P [-l L]
+
+optional arguments:
+  -h, --help  show this help message and exit
+  -b B        Bearer Token
+  -u U        Prediction URL
+  -p P        Payload
+  -l L        logging level
+```
+Note: The Bearer Token be obtained by running the auth.py 
+
+usage: auth.py [-h] -a A -u U -p P [-l L]
+
+optional arguments:
+  -h, --help  show this help message and exit
+  -a A        Auth URL
+  -u U        User
+  -p P        Password
+  -l L        logging level
+  
+`python auth.py -a <CP4D_URL>/v1/preauth/validateAuth -u USER_ID -p PASSWORD`
+
+Sample command:
+
+`python churnrisk_app.py -b. BEARER_TOKEN -u PREDICTIONS_URL -p '{"input_data":[{"fields":["AGE_GROUP","GENDER","STATUS","CHILDREN","ESTINCOME","HOMEOWNER","TOTALDOLLARVALUETRADED","TOTALUNITSTRADED","LARGESTSINGLETRANSACTION","SMALLESTSINGLETRANSACTION","PERCENTCHANGECALCULATION","DAYSSINCELASTLOGIN","DAYSSINCELASTTRADE","NETREALIZEDGAINS_YTD","NETREALIZEDLOSSES_YTD"],"values":[["Adult","F","M",2,25000,"N",5000,50,500,50,3.45,3,10,1500.0,0.0]]}]}'`
+
+Produces this output:
+
+```
+INFO:root:Predicting churn risk.
+/Users/jimvo/opt/anaconda3/lib/python3.7/site-packages/urllib3/connectionpool.py:847: InsecureRequestWarning: Unverified HTTPS request is being made. Adding certificate verification is strongly advised. See: https://urllib3.readthedocs.io/en/latest/advanced-usage.html#ssl-warnings
+  InsecureRequestWarning)
+{'predictions': [{'fields': ['prediction', 'probability'],
+                  'values': [[2, [0.12, 0.41, 0.47]]]}]}
+```
+
+The prediction is shown at the bottom of the output.
+
+
+#### Execute the churnrisk_wml.py 
+
+The churnrisk_wml.py uses the APIClient from the ibm_watson_machine_learning to call the deployed model similar to example in the notebook.
+
+The `python churnrisk_wml.py -h` command show the help.  
 
 ```
 usage: churnrisk_app.py [-h] -a A -s S -d D -p P [-l L]
@@ -163,7 +209,7 @@ Where:
 
 Sample command:
 
-`python churnrisk_app.py -a YOUR_API_KEY -s churnrisk_deployment_space -d churnrisk_model_deployment -p '{"input_data":[{"fields":["AGE_GROUP","GENDER","STATUS","CHILDREN","ESTINCOME","HOMEOWNER","TOTALDOLLARVALUETRADED","TOTALUNITSTRADED","LARGESTSINGLETRANSACTION","SMALLESTSINGLETRANSACTION","PERCENTCHANGECALCULATION","DAYSSINCELASTLOGIN","DAYSSINCELASTTRADE","NETREALIZEDGAINS_YTD","NETREALIZEDLOSSES_YTD"],"values":[["Adult","F","M",2,25000,"N",5000,50,500,50,3.45,3,10,1500.0,0.0]]}]}'`
+`python churnrisk_wml.py -a YOUR_API_KEY -s churnrisk_deployment_space -d churnrisk_model_deployment -p '{"input_data":[{"fields":["AGE_GROUP","GENDER","STATUS","CHILDREN","ESTINCOME","HOMEOWNER","TOTALDOLLARVALUETRADED","TOTALUNITSTRADED","LARGESTSINGLETRANSACTION","SMALLESTSINGLETRANSACTION","PERCENTCHANGECALCULATION","DAYSSINCELASTLOGIN","DAYSSINCELASTTRADE","NETREALIZEDGAINS_YTD","NETREALIZEDLOSSES_YTD"],"values":[["Adult","F","M",2,25000,"N",5000,50,500,50,3.45,3,10,1500.0,0.0]]}]}'`
 
 Produces this output:
 

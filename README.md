@@ -172,6 +172,9 @@ optional arguments:
   
 `python auth.py -a <CP4D_URL>/v1/preauth/validateAuth -u USER_ID -p PASSWORD`
 
+
+The predictions url is the form `<CP4D_URL>/v4/deployments/<UID>/predictions` taken from from the churnrisk deployment in CP4D. 
+
 Sample command:
 
 `python churnrisk_app.py -b. BEARER_TOKEN -u PREDICTIONS_URL -p '{"input_data":[{"fields":["AGE_GROUP","GENDER","STATUS","CHILDREN","ESTINCOME","HOMEOWNER","TOTALDOLLARVALUETRADED","TOTALUNITSTRADED","LARGESTSINGLETRANSACTION","SMALLESTSINGLETRANSACTION","PERCENTCHANGECALCULATION","DAYSSINCELASTLOGIN","DAYSSINCELASTTRADE","NETREALIZEDGAINS_YTD","NETREALIZEDLOSSES_YTD"],"values":[["Adult","F","M",2,25000,"N",5000,50,500,50,3.45,3,10,1500.0,0.0]]}]}'`
@@ -223,6 +226,41 @@ payload:  {'input_data': [{'fields': ['AGE_GROUP', 'GENDER', 'STATUS', 'CHILDREN
 ```
 The prediction is shown at the bottom of the output.
 
+
+#### Execute the churnrisk_flask_app.py application 
+
+The `churnrisk_flask_app.py` starts a Flask application that provides REST methods for `authentication` and `predictions`.   This is an example of an application that takes requests and resturns a response.   The application could be enhanced to augment a request with additional data or save the input/output for future analysis and model improvements. 
+
+Run:
+'python churnrisk_flask_app.py'
+
+This web application is started showing the URL, `http://0.0.0.0:8080/` or `http://<HOSTNAME>:8080/`
+
+```
+ * Serving Flask app "churnrisk_flask_app" (lazy loading)
+ * Environment: production
+   WARNING: This is a development server. Do not use it in a production deployment.
+   Use a production WSGI server instead.
+ * Debug mode: on
+INFO:werkzeug: * Running on http://0.0.0.0:8080/ (Press CTRL+C to quit)
+INFO:werkzeug: * Restarting with stat
+WARNING:werkzeug: * Debugger is active!
+INFO:werkzeug: * Debugger PIN: 709-910-698
+``` 
+
+The `authenticate` API requires a user, password, and url parameters.  The user and password are your CP4D user and password.    The url is the `<CP4D_URL>/v1/preauth/validateAuth` used to get the bearer token needed for the predictions API.  The application will cache the bearer token. 
+
+`curl --location --request POST 'http://0.0.0.0:8080/authenticate?user=<USER_NAME>&password=<PASSWORD>&url=<CP4D_URL>/v1/preauth/validateAuth`
+
+The predictions API requires a url and the prediction payload.  The url is the form `<CP4D_URL>/v4/deployments/<UID>/predictions` taken from from the churnrisk deployment in CP4D. 
+
+```
+curl --location --request POST 'http://0.0.0.0:8080/predict?url=https://dse-cp4d301-cluster1.datascienceelite.com/v4/deployments/f5c8d13b-d857-4f6d-9a7c-288f6dfe24fd/predictions' \
+--header 'Content-Type: application/json' \
+--data-raw '{"input_data":[{"fields":["AGE_GROUP","GENDER","STATUS","CHILDREN","ESTINCOME","HOMEOWNER","TOTALDOLLARVALUETRADED","TOTALUNITSTRADED","LARGESTSINGLETRANSACTION","SMALLESTSINGLETRANSACTION","PERCENTCHANGECALCULATION","DAYSSINCELASTLOGIN","DAYSSINCELASTTRADE","NETREALIZEDGAINS_YTD","NETREALIZEDLOSSES_YTD"],"values":[["Adult","F","M",2,25000,"N",5000,50,500,50,3.45,3,10,1500.0,0.0]]}]}'
+```
+
+
 #### Execute the churnrisk_localmodel.py application 
 
 The `churnrisk_localmodel.py` loads the `churnrisk.pkl` file using pickle.load() method.  The `churnrisk.pkl` was created in the notebook using pickle.dump() method and saved in the project data a0ssets using the `project_lib` package.  A version of the `churnrisk.pkl` is included in the github project.  The file can also be downloaded from the project. 
@@ -256,6 +294,7 @@ model accuracy:  0.9387096774193548
 make a single prediction using a dataframe payload
 prediction:  [2]
 ```
+
 
 
 ### Run an AutoAI experiment 

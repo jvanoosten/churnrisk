@@ -6,7 +6,6 @@ Flask==1.1.1
 numpy==1.18.4
 requests==2.22.0
 urllib3
-numpy
 pandas
 scikit-learn
 scipy

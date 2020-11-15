@@ -143,6 +143,26 @@ The Access Token was created earlier in Project Settings.
 
 ### Execute the churnrisk applications on your workstation 
 
+#### Python Environment Setup
+
+You will need to set up an environment to run the applications.   There are couple ways to do this as Python environment or Anaconda environment.    This article has some background for properly setting up Python 3 on your Mac: https://opensource.com/article/19/5/python-3-default-mac     This link explains how to install Anaconda via the command line: https://docs.anaconda.com/anaconda/install/mac-os/#using-the-command-line-install
+
+1.	If you are using Python environments, create a new environment using the requirements.txt file included in the GitHub churnrisk project.  
+
+pip install -r requirements.txt
+
+2.	If you are using Anaconda, create a new environment using the flask.yml file included in the GitHub churnrisk project. 
+
+conda env create --file flask.yml
+
+Activate the environment by running:
+
+conda activate flask
+
+You should now have an environment needed to run the Python applications. 
+
+
+
 #### Execute the churnrisk_app.py 
 
 The churnrisk_app.py uses a python request to make a REST api call to the deployed model.

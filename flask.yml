@@ -1,0 +1,16 @@
+name: flask
+channels:
+  - defaults
+dependencies:
+  - python=3.6
+  - Flask=1.1.1
+  - numpy
+  - pandas
+  - scikit-learn
+  - scipy
+  - pip
+  - pip:
+    - requests==2.22.0
+    - urllib3
+    - jsonlib-python3
+    - sklearn_pandas==1.8.0

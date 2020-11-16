@@ -35,6 +35,7 @@ def authenticate():
     user = request.args['user']
     password = request.args['password']
     response = requests.get(url, auth=HTTPBasicAuth(user, password), verify=False)
+    print(response.text)
     token = response.json()['accessToken']
     cache['bearer_token'] = token
     return token
